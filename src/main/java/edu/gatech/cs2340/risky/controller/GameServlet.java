@@ -50,8 +50,6 @@ public class GameServlet extends HttpServlet {
             lobby.allocateArmies();
             
             this.game = new Game(lobby);
-            request.setAttribute("game", this.game);
-            
             response.sendRedirect("/risky/game/");
         }
     }

@@ -20,10 +20,6 @@ public class Game {
         }
     }
     
-    public Game(int lobbyId) {
-        this(new Lobby("lobbyId#" + lobbyId));
-        //this(Lobby.getById(lobbyId));
-    }
     public Lobby getLobby() {
         return lobby;
     }
