@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import edu.gatech.cs2340.risky.model.Game;
-import edu.gatech.cs2340.risky.model.Lobby;
 import edu.gatech.cs2340.risky.model.Player;
 
 @WebServlet(urlPatterns = {
@@ -28,28 +27,26 @@ public class GameServlet extends HttpServlet {
         if (null == operation) {
             operation = "POST";
         }
-        
         if (operation.equalsIgnoreCase("PUT")) {
             doPut(request, response);
             
         } else if (operation.equalsIgnoreCase("DELETE")) {
             doDelete(request, response);
-            
-        } else {
-            String title = request.getParameter("title");
-            
-            Lobby lobby = new Lobby(title);
+        }else{
+            this.game = new Game();
             
             String name;
             for (int i=0 ; true ; i++) {
                 name = request.getParameter("player" + i);
                 if (name == null) break;
-                lobby.players.add(new Player(name));
+                game.addPlayer(new Player(name));
             }
+
+            game.calculateTurnOrder();
+            game.allocateArmies();
             
-            lobby.allocateArmies();
+            request.setAttribute("game", this.game);
             
-            this.game = new Game(lobby);
             response.sendRedirect("/risky/game/");
         }
     }
@@ -58,14 +55,19 @@ public class GameServlet extends HttpServlet {
      * Called when HTTP method is GET (e.g., from an <a href="...">...</a>
      * link).
      */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        if (this.game == null) {
-            response.sendRedirect("/risky/lobby/");
-            return;
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String info = (String) request.getParameter("info");
+        if(info==null){
+            request.setAttribute("game", this.game);
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/game.jsp");
+
+            dispatcher.forward(request, response);
+        }else{
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            //response.getWriter().write("{\"players\":["+game.getPlayerOrder()+"],\"terr\":["+game.getTerritoryArmyFromPlayers()+"]}");
+            response.getWriter().write(game.getTerritoryArmyFromPlayers());
         }
-        request.setAttribute("game", this.game);
-        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/game.jsp");
-        dispatcher.forward(request, response);
     }
 
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

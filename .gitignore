@@ -4,3 +4,6 @@ target*
 *~
 .classpath
 .project
+*.swp
+*.swo
+deploy.sh

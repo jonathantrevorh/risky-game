@@ -39,12 +39,13 @@
 			<fileset dir="${src.home}/webapp"/>
 		</copy>
 	</target>
-
+	
 	<target name="deploy" depends="prepare">
-		<mkdir dir="${catalina.base}/webapps/${app.name}"/>
-		<copy todir="${catalina.base}/webapps/${app.name}">
+		<mkdir dir="${catalina.home}/webapps/${app.name}"/>
+		<copy todir="${catalina.home}/webapps/${app.name}">
 			<fileset dir="${build.home}"/>
 		</copy>
 	</target>
+	
 
 </project>

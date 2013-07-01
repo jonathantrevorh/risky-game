@@ -7,7 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import edu.gatech.cs2340.risky.model.Lobby;
+import edu.gatech.cs2340.risky.model.Game;
 import edu.gatech.cs2340.risky.model.Player;
 
 @WebServlet(urlPatterns = {
@@ -17,7 +17,7 @@ import edu.gatech.cs2340.risky.model.Player;
 })
 public class LobbyServlet extends HttpServlet {
 
-    Lobby lobby = null;
+   Game game = null;//figure out how to unify this instance with game servlet's instance
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -35,18 +35,20 @@ public class LobbyServlet extends HttpServlet {
         } else {
             String title = request.getParameter("title");
             
-            this.lobby = new Lobby(title);
+            this.game= new Game();
             
             String name;
             for (int i=0 ; true ; i++) {
                 name = request.getParameter("player" + i);
                 if (name == null) break;
-                this.lobby.players.add(new Player(name));
+                this.game.addPlayer(new Player(name));
             }
+
+            String territoryCount;
+            territoryCount = request.getParameter("polys");
+            this.game.setTerritoryNum(23);//this number needs to be from polys, not inline
             
-            this.lobby.allocateArmies();
-            
-            request.setAttribute("lobby", this.lobby);
+            request.setAttribute("game", this.game);
             RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/lobby.jsp");
             dispatcher.forward(request, response);
         }
@@ -57,26 +59,26 @@ public class LobbyServlet extends HttpServlet {
      * link).
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        request.setAttribute("lobby", lobby);
+        request.setAttribute("game", game);
         RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/lobby.jsp");
         dispatcher.forward(request, response);
     }
 
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String name = (String) request.getParameter("name");
+        //String name = (String) request.getParameter("name");
         int id = getId(request);
-        lobby.players.get(id).name = name;
+        //lobby.players.get(id).name = name;
         
-        request.setAttribute("lobby", lobby);
+        request.setAttribute("game", game);
         RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/lobby.jsp");
         dispatcher.forward(request, response);
     }
 
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         int id = getId(request);
-        lobby.players.remove(id);
+        //lobby.players.remove(id);
         
-        request.setAttribute("lobby", lobby);
+        request.setAttribute("game", game);
         RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/lobby.jsp");
         dispatcher.forward(request, response);
     }
