@@ -1,12 +1,22 @@
 function CanvasMap(canvas, map, players, config) {
     this.canvas = canvas;
     this.context = this.canvas.getContext("2d");
+    this.map = map;
     this.territories = map.territories;
     this.players = players;
     this.config = {
         "scale": config.scale || 10
     };
 }
+
+CanvasMap.prototype.getTerritoryAt = function (point) {
+    for (var i=0 ; i < this.territories.length ; i++) {
+        if (pointInPoly(point, this.territories[i])) {
+            return this.territories[i];
+        }
+    }
+    throw new Error("Not a territory");
+};
 
 CanvasMap.prototype.getOwnershipMap = function (players) {
     var map = {};// territoryId -> player
@@ -23,17 +33,18 @@ CanvasMap.prototype.getOwnershipMap = function (players) {
 };
 
 CanvasMap.prototype.getDeedForTerritory = function (territory) {
-    for (var i=0 ; i < this.players.length ; i++) {
-        if (this.players[i].territories[territory.id]) {
-            return this.players[i].territories[territory.id];
-        }
-    }
+    console.log("getDeedForTerritory");
+    console.log(this.map);
+    console.log(this.map.deeds);
+    console.log(this.map.deeds[0]);
+    console.log(territory.id);
+    console.log("\tplayers");
+    console.log(this.players);
+    return this.map.deeds[territory.id];
 };
 
 CanvasMap.prototype.getOwnerOfTerritory = function (players, territory) {
     var ownership = this.getOwnershipMap(players);
-    console.log(ownership);
-    console.log(territory);
     return ownership[territory];
 };
 
@@ -92,12 +103,14 @@ CanvasMap.prototype.drawTerritory = function (territory, player) {
     this.labelTerritory(territory, player);
 };
 
-CanvasMap.prototype.draw = function (players) {
+CanvasMap.prototype.draw = function (map, players) {
     this.canvas.width = this.canvas.width;// clear canvas
     this.context.strokeStyle = "#333";
-    
+    console.log(players);
+    this.map = map;
+    this.players = players;
     var ownershipMap = this.getOwnershipMap(players);
-    
+    console.log(ownershipMap);
     if (!this.territories) return;
     for (var i=0 ; i < this.territories.length ; i++) {
         var territory = this.territories[i];
@@ -123,13 +136,4 @@ CanvasMap.prototype.calculateCenter = function (territory) {
     center[0] *= this.config.scale / territory.vertexes.length;
     center[1] *= this.config.scale / territory.vertexes.length;
     return center;
-};
-
-CanvasMap.prototype.getTerritoryAt = function (point) {
-    for (var i=0 ; i < this.territories.length ; i++) {
-        if (pointInPoly(point, this.territories[i])) {
-            return this.territories[i];
-        }
-    }
-    throw new Error("Not a territory");
 };

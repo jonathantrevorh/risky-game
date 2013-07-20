@@ -55,9 +55,9 @@ public class Player extends Model implements Comparable {
         return number;// number of armies actually attacked with
     }
     
-    public void attack(String attackingTerritory, String defendingTerritory, int attackingDie, int defendingDie) throws Exception {
+    public BattleRecord attack(String attackingTerritory, String defendingTerritory, int attackingDie, int defendingDie) throws Exception {
         Battle worldWarJava = new Battle(attackingTerritory, defendingTerritory, attackingDie, defendingDie);
-        worldWarJava.wage();
+        return worldWarJava.wage();
     }
     
     public void gainTerritory(Object territoryId, TerritoryDeed deed) {

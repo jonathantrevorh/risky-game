@@ -87,6 +87,24 @@ public class TurnOrder {
         
         return this.action;
     }
+
+    public int nextTurn() throws Exception {
+        Lobby lobby = Lobby.get(this.lobbyId);
+        if (lobby == null) throw new Exception("No lobby");
+        
+        lobby.getPlayers().get(this.playerIndex).armiesAvailableThisTurn = 0;// can't keep the armies they didn't place
+        
+        this.playerIndex++;
+        if (this.playerIndex >= lobby.players.size()) {
+            this.round++;
+            this.playerIndex %= lobby.players.size(); 
+        }
+        
+        this.action = 0;
+        
+        this.handleActionTransition();
+        return this.playerIndex;
+    }
     
     protected void handleActionTransition() {
         Lobby lobby = Lobby.get(this.lobbyId);
@@ -105,17 +123,6 @@ public class TurnOrder {
             }
             
         }
-    }
-
-    public int nextTurn() throws Exception {
-        Lobby lobby = Lobby.get(this.lobbyId);
-        if (lobby == null) throw new Exception("No lobby");
-        this.playerIndex++;
-        if (this.playerIndex >= lobby.players.size()) {
-            this.round++;
-            this.playerIndex %= lobby.players.size(); 
-        }
-        return this.playerIndex;
     }
     
     public void automateSetup() throws Exception {

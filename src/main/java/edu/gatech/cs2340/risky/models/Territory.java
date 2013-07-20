@@ -10,10 +10,7 @@ public class Territory extends Model {
     public Object[] adjacencies;
     
     public Territory(int id, Integer[][] vertexes, Object[] adjacencies) {
-        this.id = id;
-        this.vertexes = vertexes;
-        this.center = null;
-        this.adjacencies = adjacencies;
+        this(id, vertexes, null, adjacencies);
     }
     
     public Territory(int id, Integer[][] vertexes, Integer[] center, Object[] adjacencies) {

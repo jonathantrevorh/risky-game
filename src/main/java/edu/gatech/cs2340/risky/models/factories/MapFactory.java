@@ -1,5 +1,7 @@
 package edu.gatech.cs2340.risky.models.factories;
 
+import java.util.ArrayList;
+
 import edu.gatech.cs2340.risky.Database;
 import edu.gatech.cs2340.risky.database.HashMapDbImpl;
 import edu.gatech.cs2340.risky.models.Map;
@@ -42,36 +44,74 @@ public class MapFactory {
             {{32, 26}, {36, 24}, {38, 22}, {40, 24}, {37, 27}, {33, 27}}
         };
         
-        Object[][] adjacencies = {
-                {1, 3, 22},//0
+        Integer[][] adjacencies = {
+                {0, 1},
+                {0, 3},
+                {0, 22},
+                {1, 2},
+                {1, 3},
                 {2, 3},
-                {3, 4, 5},//2
-                {4, 20},
-                {9, 23},//4
-                {6, 7, 9},
-                {7, 8},//6
+                {2, 4},
+                {2, 5},
+                {3, 4},
+                {3, 20},
+                {4, 9},
+                {4, 23},
+                {5, 6},
+                {5, 7},
+                {5, 9},
+                {6, 7},
+                {6, 8},
+                {7, 8},
+                {7, 9},
                 {8, 9},
-                {9, 10, 11, 12},//8
-                {10},
-                {12, 13, 23},//10
-                {15, 14, 12},
-                {13, 14, 15},//12
-                {14, 15, 16, 23},
-                {15},//14
-                {16},
-                {17},//16
-                {23, 19, 18},
-                {21, 20, 19},//18
-                {20},
-                {21},//20
-                {22},
-                {},//22
-                {},
+                {8, 10},
+                {8, 11},
+                {8, 12},
+                {9, 10},
+                {10, 12},
+                {10, 13},
+                {10, 23},
+                {11, 12},
+                {11, 14},
+                {11, 15},
+                {12, 13},
+                {12, 14},
+                {12, 15},
+                {13, 14},
+                {13, 15},
+                {13, 16},
+                {13, 23},
+                {14, 15},
+                {15, 16},
+                {16, 17},
+                {17, 18},
+                {17, 19},
+                {17, 23},
+                {18, 19},
+                {18, 20},
+                {18, 21},
+                {19, 20},
+                {20, 21},
+                {21, 22}
         };
         
         for (int i=0 ; i < vertexeses.length ; i++) {
-            Territory t = new Territory(i, vertexeses[i], adjacencies[i]);
+            ArrayList<Object> adj = new ArrayList<Object>();
+            for (int j=0 ; j < adjacencies.length ; j++) {
+                if (adjacencies[j][0] == i) {
+                    adj.add(adjacencies[j][1]);
+                    
+                } else if (adjacencies[j][1] == i) {
+                    adj.add(adjacencies[j][0]);
+                }
+            }
+            Territory t = new Territory(i, vertexeses[i], adj.toArray());
             m.addTerritory(t);
+        }
+        
+        for (int i=0 ; i < vertexeses.length ; i++) {
+            
         }
         
         Database.setModel(m);

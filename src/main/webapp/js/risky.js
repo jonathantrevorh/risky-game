@@ -1,6 +1,7 @@
 var risky = angular.module("risky", ["ngResource"]);
 risky.service("Toast", function ($rootScope, $q) {
     var toast = {};
+    if (!$rootScope.toasts) $rootScope.toasts = {};
     toast.send = function (id, type, message, bundle) {
         bundle = bundle || {};
         
@@ -11,40 +12,52 @@ risky.service("Toast", function ($rootScope, $q) {
             id = undefined;
         }
         
+        id = id || $rootScope.toasts.length;
+        
         var type = (type === "error") ? "error" : "log";
-        console[type](message);
+        //console[type](message);
         type = (type === "error") ? "danger" : "info";
         
         if (message.data && message.data.cause && message.data.cause.message) message = message.data.cause.message;
         if (message.data && message.data.message) message = message.data.message;
         if (message.message) message = message.message;
-        if (!$rootScope.toasts) $rootScope.toasts=[];
         
         var q = $q.defer();
-        var toast = {"id":$rootScope.toasts.length, "type":type, "message":message, "q": q};
         
-        for (var property in bundle) {// copy properties of the bundle to the toast
-            toast[property] = bundle[property];
+        bundle.type = type;
+        bundle.message = message;
+        bundle.q = q;
+        bundle.hasEgo = (bundle.hasEgo != void 0) ? bundle.hasEgo : false;
+        bundle.closeable = (bundle.closeable != void 0) ? bundle.closeable : true;
+        bundle.close = function () {
+            delete $rootScope.toasts[id];
+        };
+        bundle.respond = function (value) {
+            bundle.q.resolve(value);
+            $rootScope.occlude = false;
+            bundle.close();
         }
         
-        $rootScope.toasts[toast.id] = toast;
-        if (typeof bundle.timeout == "undefined" || bundle.timeout > 0) {
-            setTimeout(function () {
-                clearElement("toast" + toast.id, bundle.timeout || 2000);
-            });
+        if (bundle.hasEgo) {
+            $rootScope.occlude = true;
         }
+        $rootScope.toasts[id] = bundle;
         
         return q.promise;
-    };
+     };
     toast.notify = function (id, message) {
         return toast.send(id, "notice", message);
     };
     toast.error = function (id, message) {
         return toast.send(id, "error", message);
     };
-    toast.request = function (id, message, requestinfo) {
-        // requestinfo = [{"name":name,"value":value},{...},...]
-        return toast.send(id, "request", message, {"buttons":requestinfo, timeout: 0});
+    toast.request = function (message, bundle) {
+        bundle = bundle || {};
+        bundle.isRequest = true;
+        bundle.timeout = 0;
+        bundle.closeable = false;
+        bundle.hasEgo = true;
+        return toast.send(void 0, "warning", message, bundle);
     };
     return toast;
     
@@ -97,7 +110,7 @@ risky.filter("iif", function () {// ternary operator for {{}}'d things
     };
 }).filter("oor", function () {// for something || default
     return function(input, elseValue) {
-        return input || elseValue;
+        return (input != void 0) ? input : elseValue;
     };
 });
 
@@ -120,15 +133,4 @@ function pointInPoly(point, polygon) {
         }
     }
     return c;
-}
-
-function clearElement(e, t) {
-    var element = (e && e.nodeType) ? e : document.getElementById(e);
-    var delay = t || 0;
-    
-    setTimeout(function () {
-        element.style.animation = "pop-out 0.8s ease-in";
-        setTimeout(function () {element.style.display="none"}, 800);
-    },delay);
-    //var display = getComputedStyle(e,null);
 }

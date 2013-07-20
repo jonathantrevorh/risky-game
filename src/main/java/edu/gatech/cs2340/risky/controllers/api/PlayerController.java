@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import edu.gatech.cs2340.risky.ApiServlet;
 import edu.gatech.cs2340.risky.api.annotations.ApiParams;
 import edu.gatech.cs2340.risky.database.ModelDb;
+import edu.gatech.cs2340.risky.models.BattleRecord;
 import edu.gatech.cs2340.risky.models.Lobby;
 import edu.gatech.cs2340.risky.models.Map;
 import edu.gatech.cs2340.risky.models.Player;
@@ -85,7 +86,40 @@ public class PlayerController extends ApiServlet {
     @ApiParams({"request", "attacking", "defending", "attackingDie", "defendingDie"})
     public Object attack(HttpServletRequest request, String attacking, String defending, String attackingDie, String defendingDie) throws Exception {
         Player player = Player.get(request);
-        player.attack(attacking, defending, Integer.parseInt(attackingDie), Integer.parseInt(defendingDie));
+        BattleRecord record = player.attack(attacking, defending, Integer.parseInt(attackingDie), Integer.parseInt(defendingDie));
+
+        Lobby lobby = Lobby.get(request);
+        Map map = Map.get(lobby.mapId);
+        TerritoryDeed attacker = map.deeds.get(record.attackingTerritory);
+        TerritoryDeed attackee = map.deeds.get(record.defendingTerritory);
+        
+        System.out.println("ASDFKSADJFLKSAJDFLKSADJFLKJSADFKLJASDFKLJSADFKLJASDFLKJSADFKLSJADFLKJASDFLKJ");
+        System.out.println(record.attackingTerritory);
+        System.out.println(record.defendingTerritory);
+        System.out.println(attacker);
+        System.out.println(attacker.playerId);
+        System.out.println(attackee);
+        System.out.println(attackee.playerId);
+        System.out.println(attackee.playerId.toString());
+        System.out.println(Integer.parseInt(attackee.playerId.toString()));
+        System.out.println(Player.get(Integer.parseInt(attackee.playerId.toString())));
+        System.out.println(Player.get(request, Integer.parseInt(attackee.playerId.toString())));
+        System.out.println("ASDFKSADJFLKSAJDFLKSADJFLKJSADFKLJASDFKLJSADFKLJASDFLKJSADFKLSJADFLKJASDFLKJ");
+        
+        attacker.armies -= record.attackingCasualties;
+        attackee.armies -= record.defendingCasualties;
+        
+        if (attacker.armies <= 0) {
+            // give attacker to defending player
+            System.out.println("here");
+            this.transferTerritory(request, Player.get(request, Integer.parseInt(attackee.playerId.toString())), attacking);
+            
+        } else if (attackee.armies <= 0) {
+            // give attackee to attacking player
+            System.out.println("there");
+            this.transferTerritory(request, player, defending);
+        }
+        
         return player;
     }
     
@@ -128,19 +162,40 @@ public class PlayerController extends ApiServlet {
             throw new Exception("You already own this territory");
             
         } else if (deed.armies == 0) {// after a battle, when the territory is being lost
-            Player opponent = Player.get(request, (Integer) deed.playerId);
-            if (opponent == null) {
-                throw new Error("No opponent to take from");
-            }
-            //System.out.println("taking " + territory + " from " + deed.playerId);
-            deed = opponent.territories.remove(territory);
-            deed.playerId = player.id;
-            player.territories.put(territory, deed);
+            this.transferTerritory(request, player, territory);
             return player;
             
         }
         
         throw new Exception("Could not seize territory");
+    }
+    
+    private void transferTerritory(HttpServletRequest request, Player player, String territory) {
+        Lobby lobby = Lobby.get(request);
+        Map map = Map.get(lobby.mapId);
+        TerritoryDeed deed = map.deeds.get(territory);
+        Player opponent = Player.get(request, (Integer) deed.playerId);
+        if (opponent == null) {
+            throw new Error("No opponent to take from");
+        }
+        Integer key = Integer.parseInt(territory);
+        
+        System.out.print("Key: ");
+        System.out.println(key == null ? "null territory" : (key.getClass().getSimpleName() + ":" + key));
+        for (Entry<Object, TerritoryDeed> entry : opponent.territories.entrySet()) {
+            System.out.print(entry.getKey().getClass().getSimpleName() + ":" + entry.getKey() + ": ");
+            System.out.println(entry.getValue());
+        }
+        deed = opponent.territories.remove(key);
+        System.out.println("taking from " + opponent.name);
+
+        System.out.println(deed == null ? "null deed" : deed);
+        
+        deed.playerId = player.id;
+        deed.armies = 1;
+
+        System.out.println("giving to " + player.name);
+        player.territories.put(key, deed);
     }
     
     @ApiParams({"request", "from", "to", "armies"})

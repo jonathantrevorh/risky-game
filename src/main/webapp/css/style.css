@@ -1,10 +1,10 @@
 @keyframes pop-in {
-    from {bottom: -32px; opacity: 0; min-height: 0; max-height: 1px; width: 120px;}
-    to {bottom: 0; opacity: 1; min-height: 48px; max-height: 96px; width: 480px;} }
+    from {bottom: -32px; opacity: 0; min-height: 0; max-height: 1px; width: 120px; left: -87px;}
+    to {bottom: 0; opacity: 1; min-height: 48px; max-height: 96px; width: 480px; left: -267px;}}
 
 @keyframes pop-out {
     from {bottom: 0; margin-top: 2px; opacity: 1;}
-    to {bottom: 32px; margin-top: -80px; opacity: 0; display: none;} }
+    to {bottom: 32px; margin-top: -80px; opacity: 0; display: none;}}
 
 /* tag-wide styles */
 body {
@@ -13,6 +13,20 @@ body {
     max-width: 800px;}
 
 /* application-neutral class-level styles */
+#content {
+    /*position: relative;*//* royally mucks-about with mapping the location of a click on the map to a territory*/}
+
+.occlude {
+    background-color: rgba(0, 0, 0, 0.25);
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;}
+
+.washed-out {
+    color: lightgrey;}
+
 .right-align {
     text-align: right;}
 
@@ -30,17 +44,17 @@ body {
 .toasts {
     position: fixed;
     bottom: 32px;
-    left: 50%;}
+    left: 50%;
+    width: 0;}
 
 .toast {
     position: relative;
-    left: -50%;
     width: 480px;
+    left: -267px; /* [480px + 55px(bootstrap alert padding)] / 2 */
     min-height: 48px;
     margin: 2px auto;
     animation: pop-in 0.5s;}
 
-/* application-specific class-level styles */
 .color-swatch {
     display: inline-block;
     height: 1em;
