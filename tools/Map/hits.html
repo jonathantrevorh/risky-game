@@ -25,13 +25,13 @@ function generateColor() {
 }
 
 function pointInPoly(point, polygon) {
-	var i, j, c = false, vertexes = polygon.vertexes;
-	for (i = 0, j = vertexes.length - 1; i < vertexes.length; j = i++) {
-		if (((vertexes[i][1] > point[1]) != (vertexes[j][1] > point[1])) && (point[0] < (vertexes[j][0] - vertexes[i][0]) * (point[1] - vertexes[i][1]) / (vertexes[j][1] - vertexes[i][1]) + vertexes[i][0])) {
-			c = !c;
-		}
-	}
-	return c;
+    var i, j, c = false, vertexes = polygon.vertexes;
+    for (i = 0, j = vertexes.length - 1; i < vertexes.length; j = i++) {
+        if (((vertexes[i][1] > point[1]) != (vertexes[j][1] > point[1])) && (point[0] < (vertexes[j][0] - vertexes[i][0]) * (point[1] - vertexes[i][1]) / (vertexes[j][1] - vertexes[i][1]) + vertexes[i][0])) {
+            c = !c;
+        }
+    }
+    return c;
 }
 
 function Map(canvas, polygons, config) {

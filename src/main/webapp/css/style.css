@@ -1,7 +1,23 @@
+@keyframes pop-in {
+    from {bottom: -32px; opacity: 0; min-height: 0; max-height: 1px; width: 120px;}
+    to {bottom: 0; opacity: 1; min-height: 48px; max-height: 96px; width: 480px;} }
+
+@keyframes pop-out {
+    from {bottom: 0; margin-top: 2px; opacity: 1;}
+    to {bottom: 32px; margin-top: -80px; opacity: 0; display: none;} }
+
+/* tag-wide styles */
 body {
     margin: 0 auto;
     padding: 1em;
     max-width: 800px;}
+
+/* application-neutral class-level styles */
+.right-align {
+    text-align: right;}
+
+.left-align {
+    text-align: left;}
 
 .oneof2 {
     float: left;
@@ -11,19 +27,36 @@ body {
     height: 20px;
     width: 30px;}
 
+.toasts {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;}
+
+.toast {
+    position: relative;
+    left: -50%;
+    width: 480px;
+    min-height: 48px;
+    margin: 2px auto;
+    animation: pop-in 0.5s;}
+
+/* application-specific class-level styles */
 .color-swatch {
     display: inline-block;
     height: 1em;
     width: 1em;}
 
+/* application-specific overrides */
 .row-fluid .no-left-gutter {
     margin-left: 0;}
 
-.right-align {
-    text-align: right;}
+.row-fluid [class*="span"] > *:first-child {
+    margin-top: 0;}
 
-.left-align {
-    text-align: left;}
-
+/* application-specific one-off styles */
 .action-bar {
-	font-size: 85%;}
+    font-size: 85%;}
+
+.highlighted {
+    background-color: #ddd;
+    padding: 5px;}
