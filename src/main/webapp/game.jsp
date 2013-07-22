@@ -59,12 +59,12 @@
                     <div>Attack with {{states.play[1].data.attackingDie | oor : '0'}} {{states.play[1].data.attackingDie == 1 | iif : "die" : "dice"}}</div>
                     <div>Defend with {{states.play[1].data.defendingDie | oor : '0'}} {{states.play[1].data.defendingDie == 1 | iif : "die" : "dice"}}</div>
                     <div ng-show="$scope.states.play[1].data.attacking && $scope.states.play[1].data.defending && $scope.states.play[1].data.attackingDie && $scope.states.play[1].data.defendingDie">Repeat as necessary</div>
-                    <div><a class="btn btn-mini" ng-click="states.play[1].skipAttacks()" ng-class="turnOrder.action != 1 | iif : 'disabled' : ''">Don't attack</a></div>
+                    <div><button class="btn btn-mini" ng-click="states.play[1].skipAttacks()" ng-disabled="turnOrder.action != 1">Don't attack</button></div>
                 </div>
                 <div class="span3" ng-class="turnOrder.action == 2 | iif : 'highlighted' : ''">
                     <h4>Fortify</h4>
                     <div>You have one shot to seize everything you ever wanted. Capture it; don't let it slip!</div>
-                    <div><a class="btn btn-mini" ng-click="states.play[2].skipFortify()" ng-class="turnOrder.action != 2 | iif : 'disabled' : ''">Skip fortification</a></div>
+                    <div><button class="btn btn-mini" ng-click="states.play[2].skipFortify()" ng-disabled="turnOrder.action != 2">Skip fortification</button></div>
                 </div>
                 <div class="span3" ng-class="turnOrder.action == 3 | iif : 'highlighted' : ''">
                     <h4>End Turn</h4>
