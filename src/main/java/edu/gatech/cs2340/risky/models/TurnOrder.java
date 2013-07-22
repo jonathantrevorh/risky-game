@@ -92,9 +92,16 @@ public class TurnOrder {
         Lobby lobby = Lobby.get(this.lobbyId);
         if (lobby == null) throw new Exception("No lobby");
         
-        lobby.getPlayers().get(this.playerIndex).armiesAvailableThisTurn = 0;// can't keep the armies they didn't place
-        
-        this.playerIndex++;
+        Player oldPlayer=lobby.getPlayers().get(this.playerIndex);
+        oldPlayer.armiesAvailableThisTurn = 0;// can't keep the armies they didn't place
+ 
+        int not_playing=0;
+        while(lobby.getPlayers().get(++playerIndex%lobby.players.size()).playing == false) {
+            if(not_playing++>lobby.players.size()){
+                throw new Exception("no one playing");
+            }
+        }
+
         if (this.playerIndex >= lobby.players.size()) {
             this.round++;
             this.playerIndex %= lobby.players.size(); 
@@ -106,7 +113,7 @@ public class TurnOrder {
         return this.playerIndex;
     }
     
-    protected void handleActionTransition() {
+    protected void handleActionTransition() throws Exception {
         Lobby lobby = Lobby.get(this.lobbyId);
         Player player = lobby.getPlayers().get(this.playerIndex);
         
@@ -117,6 +124,12 @@ public class TurnOrder {
         } else if ("play".equals(this.state)) {
             switch (this.action) {
             case 0:
+                if (lobby.hasWinner()) {
+                    this.state = states[3];
+                    this.action = 0;
+                    this.playerIndex = lobby.getWinner();
+                    return;
+                }
                 System.out.println("dsl;klajsfllksajdflkasdfj;lksajf;lkjsd;lfkjsaf;lkj " + this.playerIndex + " " + player.name + " " + player.id);
                 player.armiesAvailableThisTurn += (int) Math.max(3.0, Math.ceil(player.territories.size()/3.0));
                 break;

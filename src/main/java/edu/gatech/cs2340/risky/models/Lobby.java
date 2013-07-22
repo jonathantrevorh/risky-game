@@ -66,7 +66,7 @@ public class Lobby extends Model {
     }
     
     public boolean hasTooManyPlayers() {
-        return this.players.size() >= MAX_PLAYERS;
+        return this.players.size() > MAX_PLAYERS;
     }
     
     public void allocateArmies() {
@@ -138,6 +138,10 @@ public class Lobby extends Model {
             }
         }
         return -1;
+    }
+    
+    public boolean hasWinner() {
+        return (this.getWinner()<0)?false:true;
     }
     
     public void populateValidWith(Lobby l) {
