@@ -248,6 +248,9 @@ risky.controller("GameController", function ($scope, $q, Toast, Lobby, TurnOrder
                         return options;
                     }
 
+                },
+                "skipFortify": function () {
+                    nextAction();
                 }
             },
             3: {// end turn
