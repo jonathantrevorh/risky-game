@@ -82,6 +82,7 @@ risky.service("Toast", function ($rootScope, $q) {
     }, {
         "update": {method: "PUT"},
         "attack": {method: "POST", params: {action: "attack", attacking: "", defending: "", attackingDie: 0, defendingDie: 0}},
+        "updateArmies": {method: "POST", params: {action: "updateArmies", armies: 0}},
         "fortify": {method: "POST", params: {action: "fortifyTerritory", from: "", to: "", armies: 0}},
         "seize": {method: "POST", params: {action: "seizeTerritory", territory: ""}},
         "quit": {method: "POST", params: {action: "quit"}}

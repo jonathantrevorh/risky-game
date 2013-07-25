@@ -66,7 +66,7 @@ public class Lobby extends Model {
     }
     
     public boolean hasTooManyPlayers() {
-        return this.players.size() >= MAX_PLAYERS;
+        return this.players.size() > MAX_PLAYERS;
     }
     
     public void allocateArmies() {
@@ -129,7 +129,7 @@ public class Lobby extends Model {
         return 0;
     }
     
-    public int getWinner() throws Exception {
+    public int getWinner() {
         ArrayList<Player> players = this.getPlayers();
         Map map = Map.get(this.mapId);
         for (int i=0 ; i< players.size() ; i++) {
@@ -137,15 +137,11 @@ public class Lobby extends Model {
                 return i;
             }
         }
-        throw new Exception("No winner");
+        return -1;
     }
     
     public boolean hasWinner() {
-        try {
-            this.getWinner();
-            return true;
-        } catch (Exception e) {}
-        return false;
+        return (this.getWinner()<0)?false:true;
     }
     
     public void populateValidWith(Lobby l) {

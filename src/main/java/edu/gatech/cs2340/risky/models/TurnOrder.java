@@ -92,9 +92,16 @@ public class TurnOrder {
         Lobby lobby = Lobby.get(this.lobbyId);
         if (lobby == null) throw new Exception("No lobby");
         
-        lobby.getPlayers().get(this.playerIndex).armiesAvailableThisTurn = 0;// can't keep the armies they didn't place
-        
-        this.playerIndex++;
+        Player oldPlayer=lobby.getPlayers().get(this.playerIndex);
+        oldPlayer.armiesAvailableThisTurn = 0;// can't keep the armies they didn't place
+ 
+        int not_playing=0;
+        while(lobby.getPlayers().get(++playerIndex%lobby.players.size()).playing == false) {
+            if(not_playing++>lobby.players.size()){
+                throw new Exception("no one playing");
+            }
+        }
+
         if (this.playerIndex >= lobby.players.size()) {
             this.round++;
             this.playerIndex %= lobby.players.size(); 

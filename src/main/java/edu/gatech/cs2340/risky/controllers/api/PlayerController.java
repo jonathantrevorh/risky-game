@@ -221,6 +221,17 @@ public class PlayerController extends ApiServlet {
         return player;
     }
     
+    //regular update didn't work for some reason
+    @ApiParams({"request", "armies"})
+    public Object updateArmies(HttpServletRequest request, String armies) throws Exception {
+        Player player = Player.get(request);
+        player.armies=Integer.parseInt(armies);
+        if(player.armies<1){
+            player.playing=false;
+        }
+        return player;
+    }
+
     protected synchronized Collection<Player> filterResults(Collection<Player> players, String filter, String arg) {
         if (filter == null) {
             return players;
