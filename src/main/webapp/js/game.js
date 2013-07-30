@@ -73,6 +73,7 @@ risky.controller("GameController", function ($scope, $q, Toast, Lobby, TurnOrder
                         if (maxAttackingArmies <= 1) throw new Error("Not enough dice");
                         if(!hasAttackable(territory)) throw new Error("No enemies around here");
                         data["attacking"] = territory;
+                        data["attacker"] = name;
                         
                         Toast.notify("Attacking from territory #" + territory.id + ". " + name + ", where are you attacking?");
                     }
@@ -82,6 +83,7 @@ risky.controller("GameController", function ($scope, $q, Toast, Lobby, TurnOrder
                         console.log(map.getDeedForTerritory(data.attacking));
                         console.log(map.getDeedForTerritory(data.attacking.id));
                         var maxAttackingArmies = map.getDeedForTerritory(data.attacking).armies-1;
+                        data["attack_armies"]=maxAttackingArmies+1;
                         return Toast.request(getPlayerName(data.attacking) + ", attack with how many dice?", {
                             requestType: "select",
                             options: optionRangeFactory(1, Math.min(maxAttackingArmies, 3))
@@ -90,6 +92,7 @@ risky.controller("GameController", function ($scope, $q, Toast, Lobby, TurnOrder
                     
                     function requestDefendingDie() {
                         var maxDefendingArmies = map.getDeedForTerritory(data.defending).armies;
+                        data["defend_armies"]=maxDefendingArmies;
                         return Toast.request(getPlayerName(data.defending) + ", defend with how many dice?", {
                             requestType: "select",
                             options: optionRangeFactory(1, Math.min(maxDefendingArmies, 2))
@@ -101,6 +104,7 @@ risky.controller("GameController", function ($scope, $q, Toast, Lobby, TurnOrder
                         if (getPlayerName(territory) == getCurrentPlayer().name) throw new Error("You own this territory");
                         if (data.attacking.adjacencies.indexOf(territory.id) < 0) throw new Error("That territory is not adjacent");
                         data["defending"] = territory;
+                        data["defender"] = getPlayerName(territory);
                         
                         Toast.notify(getPlayerName(data.defending) + ", man your station, #" + territory.id + " is being attacked!");
 
@@ -114,6 +118,8 @@ risky.controller("GameController", function ($scope, $q, Toast, Lobby, TurnOrder
                             return sendAttack(e);
                         }).then(function (){
                             return updateArmies();
+                        }).then( function(){
+                            return armyDiff();
                         });
                     }
                     function hasAttackable(territory){
@@ -122,7 +128,17 @@ risky.controller("GameController", function ($scope, $q, Toast, Lobby, TurnOrder
                         }
                         return false
                     }
-                    
+                    function armyDiff(){
+                        var new_attack_armies=map.getDeedForTerritory(data["attacking"]).armies;
+                        var new_defend_armies=map.getDeedForTerritory(data["attacking"]).armies;
+                        diffAttacker=(data["attack_armies"]-new_attack_armies);
+                        diffDefender=(data["defend_armies"]-new_defend_armies);
+                        attackerGain=diffAttacker<0?" lost: ":" gained: ";
+                        defenderGain=diffDefender<0?" lost: ":" gained: ";
+                        
+                        Toast.notify(data["attacker"]+attackerGain+Math.abs(diffAttacker) +" at territory "+data["attacking"].id+" , "+data["defender"]+defenderGain+Math.abs(diffDefender) +" at territory "+data["defending"].id);
+                        $scope.states.play[1].data = {};
+                    }
                     function sendAttack(e) {
                         // send attack
                         var d = $q.defer();
@@ -133,7 +149,6 @@ risky.controller("GameController", function ($scope, $q, Toast, Lobby, TurnOrder
                             defendingDie: data.defendingDie
                         }, d.resolve, d.reject);
                         
-                        $scope.states.play[1].data = {};
                         
                         return d.promise;
                     }
