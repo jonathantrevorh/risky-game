@@ -1,7 +1,8 @@
-cs2340-team6
+risky
 ========================
-It's a little risky
+Simplified version of the Hasbro favorite, as tasked by CS2340. 
 
+CSS and JavaScript constitute significant portions of the projects thanks to Bootstrap and AngularJS.
 
 Requires
 --------
